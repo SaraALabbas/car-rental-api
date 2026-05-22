@@ -13,13 +13,14 @@ class AdminSeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
-        //
-        User::create([
+{
+    User::updateOrCreate(
+        ['phone' => '0965121290'],
+        [
             'name' => 'admin',
-            'phone' => '0965121290',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
-        ]);
-    }
+        ]
+    );
+}
 }
