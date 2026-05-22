@@ -23,8 +23,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
-
+ 'allowed_origins' => [
+        'https://car-rentalv1.vercel.app',
+    ],
     'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
@@ -33,6 +34,6 @@ return [
 
     'max_age' => 7200,
 
-    'supports_credentials' => true,
+    'supports_credentials' => false,
 
 ];
