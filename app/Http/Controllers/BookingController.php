@@ -39,9 +39,9 @@ class BookingController extends Controller
     ]);
 
     // رفع الصور
-    $idFront = $request->file('id_front')->store('bookings', 'public');
-    $idBack = $request->file('id_back')->store('bookings', 'public');
-    $payment = $request->file('payment_image')->store('bookings', 'public');
+    $idFront = $this->uploadToSupabase($request->file('id_front'));
+$idBack = $this->uploadToSupabase($request->file('id_back'));
+$payment = $this->uploadToSupabase($request->file('payment_image'));
 
     $exists = Booking::where('car_id', $request->car_id)
         ->where('status', 'accepted')
@@ -89,6 +89,25 @@ class BookingController extends Controller
         'message' => 'تم الحجز بنجاح',
         'booking' => $booking
     ], 201);
+}
+private function uploadToSupabase($file)
+{
+    if (!$file || !$file->isValid()) {
+        return null;
+    }
+
+    $filename = time().'_'.$file->getClientOriginalName();
+
+    $response = \Illuminate\Support\Facades\Http::withHeaders([
+        'Authorization' => 'Bearer '.env('SUPABASE_KEY'),
+        'apikey' => env('SUPABASE_KEY'),
+    ])->attach(
+        'file',
+        fopen($file->getRealPath(), 'r'),
+        $filename
+    )->post(env('SUPABASE_URL').'/storage/v1/object/bookings/'.$filename);
+
+    return env('SUPABASE_URL').'/storage/v1/object/public/bookings/'.$filename;
 }
 
 
