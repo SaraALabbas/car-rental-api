@@ -35,12 +35,8 @@ public function index()
 
     // ✅ عرض فقط السيارات المتاحة
     $cars = Car::where('available', 1)->get()->map(function ($car) {
-        $car->image1 = asset('storage/' . $car->image1);
-        $car->image2 = asset('storage/' . $car->image2);
-        $car->image3 = asset('storage/' . $car->image3);
-        return $car;
-    });
-
+    return $car;
+});
     return response()->json($cars);
 }
     
@@ -62,9 +58,9 @@ public function index()
         'daily_km' => $car->daily_km,
         'price' => $car->price,
         'model_year' => $car->model_year,
-        'image1' => asset('storage/' . $car->image1),
-        'image2' => asset('storage/' . $car->image2),
-        'image3' => asset('storage/' . $car->image3),
+        'image1' => $car->image1,
+'image2' => $car->image2,
+'image3' => $car->image3,
     ]);
 }
     // 📌 إضافة سيارة (ADMIN)
