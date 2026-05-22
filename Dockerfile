@@ -1,10 +1,11 @@
 FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
-    unzip zip curl git \
-    libpng-dev libonig-dev libxml2-dev
-
-RUN docker-php-ext-install pdo pdo_pgsql
+    git \
+    unzip \
+    libpq-dev \
+    && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
+    && docker-php-ext-install pdo pdo_pgsql pgsql
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -12,7 +13,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN composer install
+RUN composer install --no-dev --optimize-autoloader
 
 EXPOSE 10000
 
