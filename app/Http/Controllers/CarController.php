@@ -108,25 +108,16 @@ $image3 = $this->uploadToSupabase($request->file('image3'));
 
 private function uploadToSupabase($file)
 {
-    if (!$file) return null;
-
-    $filename = time().'_'.$file->getClientOriginalName();
-
-    $response = Http::withHeaders([
-        'Authorization' => 'Bearer '.env('SUPABASE_KEY'),
-        'apikey' => env('SUPABASE_KEY'),
-    ])->attach(
-        'file',
-        file_get_contents($file),
-        $filename
-    )->post(env('SUPABASE_URL').'/storage/v1/object/cars/'.$filename);
-
-    if (!$response->successful()) {
-        dd($response->body()); // 🔥 مهم لمعرفة السبب الحقيقي
+    if (!$file) {
+        dd("FILE IS NULL");
     }
 
-    return env('SUPABASE_URL').'/storage/v1/object/public/cars/'.$filename;
-}    // 📌 تعديل سيارة
+    dd([
+        'name' => $file->getClientOriginalName(),
+        'size' => $file->getSize(),
+        'mime' => $file->getMimeType(),
+    ]);
+}   // 📌 تعديل سيارة
     public function update(Request $request, $id)
 {
     $car = Car::findOrFail($id);
