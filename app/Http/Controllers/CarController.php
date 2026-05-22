@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Car;
 use Carbon\Carbon;
 use App\Models\Booking;
+use Illuminate\Support\Facades\Http;
+
 
 use Illuminate\Http\Request;
 
@@ -87,10 +89,9 @@ public function index()
 ]);
 
         // رفع الصور
-        $image1 = $request->file('image1')->store('cars', 'public');
-        $image2 = $request->file('image2')->store('cars', 'public');
-        $image3 = $request->file('image3')->store('cars', 'public');
-
+        $image1 = uploadToSupabase($request->file('image1'));
+$image2 = uploadToSupabase($request->file('image2'));
+$image3 = uploadToSupabase($request->file('image3'));
         $car = Car::create([
             'name' => $request->name,
             'plate_number' => $request->plate_number,
@@ -109,6 +110,21 @@ public function index()
         ], 201);
     }
 
+function uploadToSupabase($file)
+{
+    $filename = time().'_'.$file->getClientOriginalName();
+
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer '.env('SUPABASE_KEY'),
+        'apikey' => env('SUPABASE_KEY'),
+    ])->attach(
+        'file',
+        file_get_contents($file),
+        $filename
+    )->post(env('SUPABASE_URL').'/storage/v1/object/cars/'.$filename);
+
+    return env('SUPABASE_URL').'/storage/v1/object/public/cars/'.$filename;
+}
     // 📌 تعديل سيارة
     public function update(Request $request, $id)
 {
