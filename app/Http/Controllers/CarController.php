@@ -121,8 +121,6 @@ private function uploadToSupabase($file)
         $filename
     )->post(env('SUPABASE_URL').'/storage/v1/object/cars/'.$filename);
 
-    if (!$response->successful()) {
-        dd($response->body()); // 🔥 مهم لمعرفة السبب الحقيقي
     }
 
     return env('SUPABASE_URL').'/storage/v1/object/public/cars/'.$filename;
