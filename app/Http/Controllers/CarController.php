@@ -89,9 +89,9 @@ public function index()
 ]);
 
         // رفع الصور
-        $image1 = uploadToSupabase($request->file('image1'));
-$image2 = uploadToSupabase($request->file('image2'));
-$image3 = uploadToSupabase($request->file('image3'));
+       $image1 = $this->uploadToSupabase($request->file('image1'));
+$image2 = $this->uploadToSupabase($request->file('image2'));
+$image3 = $this->uploadToSupabase($request->file('image3'));
         $car = Car::create([
             'name' => $request->name,
             'plate_number' => $request->plate_number,
@@ -110,11 +110,15 @@ $image3 = uploadToSupabase($request->file('image3'));
         ], 201);
     }
 
-function uploadToSupabase($file)
+private function uploadToSupabase($file)
 {
+    if (!$file) {
+        return null;
+    }
+
     $filename = time().'_'.$file->getClientOriginalName();
 
-    $response = Http::withHeaders([
+    Http::withHeaders([
         'Authorization' => 'Bearer '.env('SUPABASE_KEY'),
         'apikey' => env('SUPABASE_KEY'),
     ])->attach(
@@ -140,17 +144,16 @@ function uploadToSupabase($file)
     ]);
 
     if ($request->hasFile('image1')) {
-        $data['image1'] = $request->file('image1')->store('cars', 'public');
-    }
+    $data['image1'] = $this->uploadToSupabase($request->file('image1'));
+}
 
-    if ($request->hasFile('image2')) {
-        $data['image2'] = $request->file('image2')->store('cars', 'public');
-    }
+if ($request->hasFile('image2')) {
+    $data['image2'] = $this->uploadToSupabase($request->file('image2'));
+}
 
-    if ($request->hasFile('image3')) {
-        $data['image3'] = $request->file('image3')->store('cars', 'public');
-    }
-
+if ($request->hasFile('image3')) {
+    $data['image3'] = $this->uploadToSupabase($request->file('image3'));
+}
     $car->update($data);
 
     return response()->json([
