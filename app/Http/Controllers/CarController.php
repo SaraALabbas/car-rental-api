@@ -34,10 +34,11 @@ public function index()
     }
 
     // ✅ عرض فقط السيارات المتاحة
-    $cars = Car::where('available', 1)->get()->map(function ($car) {
-    return $car;
-});
-    return response()->json($cars);
+    $cars = Car::where('available', 1)
+    ->latest()
+    ->paginate(6);
+
+return response()->json($cars);
 }
     
     public function show($id)
