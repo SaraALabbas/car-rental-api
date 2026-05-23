@@ -111,22 +111,25 @@ private function uploadToSupabase($file)
 }
 
 
-    // 📌 عرض حجوزات المستخدم
-    public function myBookings(Request $request)
+   // 📌 عرض حجوزات المستخدم
+public function myBookings(Request $request)
 {
     $bookings = Booking::where('user_id', $request->user()->id)
         ->with('car')
         ->orderBy('created_at', 'desc')
-        ->get();
+        ->paginate(2);
 
-
-    return $bookings;
+    return response()->json($bookings);
 }
 
-    // 📌 عرض كل الحجوزات (ADMIN)
-    public function index()
+// 📌 عرض كل الحجوزات (ADMIN)
+public function index()
 {
-    return Booking::with('car')->get();
+    $bookings = Booking::with('car')
+        ->orderBy('created_at', 'desc')
+        ->paginate(2);
+
+    return response()->json($bookings);
 }
 
 public function approve($id)
