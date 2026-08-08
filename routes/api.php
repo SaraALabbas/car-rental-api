@@ -16,7 +16,8 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-
+//عرض السيارات المتاحة 
+Route::get('/available-cars', [CarController::class, 'availableCars']);
 
 // عرض كل السيارات
 Route::get('/cars', [CarController::class, 'index']);
@@ -31,15 +32,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cars/{id}', [CarController::class, 'destroy']);
 });
 
-
-// إنشاء حجز
-Route::middleware('auth:sanctum')->post('/bookings', [BookingController::class, 'store']);
-
-// حجوزات المستخدم
-Route::middleware('auth:sanctum')->get('/my-bookings', [BookingController::class, 'myBookings']);
-
-// ADMIN
-// Route::middleware('auth:sanctum')->get('/bookings', [BookingController::class, 'index']);
+Route::post('/bookings', [BookingController::class, 'store']);
+Route::post('/track-booking', [BookingController::class, 'trackBooking']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/bookings', [BookingController::class, 'index']); // للأدمن
@@ -62,9 +56,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-contracts', [ContractController::class, 'myContracts']);
 
 });
-Route::middleware('auth:sanctum')->group(function () {
+// عرض التعليمات (للجميع)
+Route::get('/instructions', [InstructionController::class, 'index']);
 
-    Route::get('/instructions', [InstructionController::class, 'index']);
+// إدارة التعليمات (للأدمن فقط)
+Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/instructions', [InstructionController::class, 'store']);
 

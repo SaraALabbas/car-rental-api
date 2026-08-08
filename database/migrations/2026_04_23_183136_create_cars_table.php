@@ -27,6 +27,7 @@ return new class extends Migration
     $table->string('image3');
 
     $table->boolean('available')->default(true);
+    $table->boolean('is_maintenance')->default(false);
 
     $table->timestamps();
 });

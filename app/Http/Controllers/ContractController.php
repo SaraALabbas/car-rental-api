@@ -15,7 +15,7 @@ class ContractController extends Controller
 {
     try {
         return response()->json(
-            Contract::with(['booking.car', 'user'])->latest()->get()
+            Contract::with(['booking.car'])->latest()->get()
         );
     } catch (\Exception $e) {
         return response()->json([
@@ -27,7 +27,7 @@ class ContractController extends Controller
     // عقد واحد
     public function show($id)
     {
-        return Contract::with(['booking.car', 'user'])->findOrFail($id);
+        return Contract::with(['booking.car'])->findOrFail($id);
     }
 
     // عقود المستخدم

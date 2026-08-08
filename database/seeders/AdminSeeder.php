@@ -18,7 +18,7 @@ class AdminSeeder extends Seeder
         ['phone' => '0965121290'],
         [
             'name' => 'admin',
-            'password' => Hash::make('admin123'),
+            'password' => Hash::make('mohammad992026'),
             'role' => 'admin',
         ]
     );

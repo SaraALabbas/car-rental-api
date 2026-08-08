@@ -23,6 +23,10 @@ class Booking extends Model
     'payment_image',
     'status',
     'rejection_reason',
+    'booking_number',
+    'daily_price',
+'discount_percentage',
+'final_price',
     
 
 ];

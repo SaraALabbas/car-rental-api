@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('booking_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
 
             $table->string('contract_number')->unique();
             $table->timestamp('signed_at')->nullable();

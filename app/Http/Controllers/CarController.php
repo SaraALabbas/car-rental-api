@@ -15,7 +15,9 @@ class CarController extends Controller
     // 📌 عرض كل السيارات
     
 public function index()
+
 {
+     
     // 🔄 رجّع السيارات اللي انتهى حجزها
     $expiredBookings = Booking::where('status', 'accepted')
         ->where('return_date', '<', Carbon::today())
@@ -34,9 +36,7 @@ public function index()
     }
 
     // ✅ عرض فقط السيارات المتاحة
-    $cars = Car::where('available', 1)
-    ->latest()
-    ->paginate(6);
+    $cars = Car::latest()->paginate(6);
 
 return response()->json($cars);
 }
@@ -59,6 +59,10 @@ return response()->json($cars);
         'daily_km' => $car->daily_km,
         'price' => $car->price,
         'model_year' => $car->model_year,
+         'seats' => $car->seats,
+    'transmission' => $car->transmission,
+    'fuel_type' => $car->fuel_type,
+    'insurance' => $car->insurance,
         'image1' => $car->image1,
 'image2' => $car->image2,
 'image3' => $car->image3,
@@ -83,6 +87,10 @@ return response()->json($cars);
     'image1' => 'required|image|mimes:jpg,jpeg,png|max:2048',
     'image2' => 'required|image|mimes:jpg,jpeg,png|max:2048',
     'image3' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+    'seats' => 'required|integer',
+'transmission' => 'required|string',
+'fuel_type' => 'required|string',
+'insurance' => 'required|numeric',
 ]);
 
         // رفع الصور
@@ -99,6 +107,11 @@ $image3 = $this->uploadToSupabase($request->file('image3'));
             'image1' => $image1,
             'image2' => $image2,
             'image3' => $image3,
+            'is_maintenance' => false,
+            'seats' => $request->seats,
+'transmission' => $request->transmission,
+'fuel_type' => $request->fuel_type,
+'insurance' => $request->insurance,
         ]);
 
         return response()->json([
@@ -138,6 +151,11 @@ private function uploadToSupabase($file)
         'daily_km',
         'price',
         'model_year', 
+        'is_maintenance',
+        'seats',
+'transmission',
+'fuel_type',
+'insurance',
     ]);
 
     if ($request->hasFile('image1')) {
@@ -173,4 +191,45 @@ if ($request->hasFile('image3')) {
             'message' => 'تم حذف السيارة'
         ]);
     }
+//عرض السيارات المتاحة حسب الوقت
+    public function availableCars(Request $request)
+{ 
+    $request->validate([
+        'pickup_date' => 'required|date',
+        'return_date' => 'required|date',
+        'pickup_time' => 'required',
+        'return_time' => 'required',
+    ]);
+
+    $bookedCars = Booking::where('status', 'accepted')
+        ->where(function ($query) use ($request) {
+
+            $query->whereBetween('pickup_date', [
+                $request->pickup_date,
+                $request->return_date
+            ])
+
+            ->orWhereBetween('return_date', [
+                $request->pickup_date,
+                $request->return_date
+            ])
+
+            ->orWhere(function ($q) use ($request) {
+
+                $q->where('pickup_date', '<=', $request->pickup_date)
+                  ->where('return_date', '>=', $request->return_date);
+
+            });
+
+        })
+        ->pluck('car_id');
+
+    $cars = Car::where('available', true)
+    ->where('is_maintenance', false)
+    ->whereNotIn('id', $bookedCars)
+    ->get();
+
+    return response()->json($cars);
+}
+
 }
